@@ -3,42 +3,47 @@
 
 #include <QObject>
 #include <QString>
-#include <QQmlEngine>  // ← ДОБАВЬ ЭТО!
 
+// Класс-движок калькулятора, предоставляет логику вычислений и взаимодействует с QML
 class CalculatorEngine : public QObject
 {
-    Q_OBJECT  // ← ОБЯЗАТЕЛЬНО!!!
-    QML_ELEMENT  // ← ДОБАВЬ ЭТО для Qt 6!
-
-    Q_PROPERTY(QString display READ display WRITE setDisplay NOTIFY displayChanged)
-    Q_PROPERTY(QString result READ result NOTIFY resultChanged)
+    Q_OBJECT
+    // Свойства, доступные из QML
+    Q_PROPERTY(QString formula READ formula WRITE setFormula NOTIFY formulaChanged)
+    Q_PROPERTY(QString result READ result WRITE setResult NOTIFY resultChanged)
 
 public:
     explicit CalculatorEngine(QObject *parent = nullptr);
 
-    Q_INVOKABLE QString display() const;
-    Q_INVOKABLE void setDisplay(const QString &display);
-    Q_INVOKABLE QString result() const;
+    // Методы, вызываемые из QML (инвокабельные)
+    Q_INVOKABLE void appendToFormula(const QString &text);   // Добавить символ в формулу
+    Q_INVOKABLE void clearFormula();                         // Очистить формулу и результат
+    Q_INVOKABLE void calculate();                            // Вычислить текущее выражение
+    Q_INVOKABLE void deleteLast();                           // Удалить последний символ
+    Q_INVOKABLE void appendParenthesis();                    // Добавить открывающую/закрывающую скобку
+    Q_INVOKABLE void toggleSign();                           // Сменить знак последнего числа
+    Q_INVOKABLE void percent();                              // Преобразовать последнее число в проценты
 
-public slots:
-    Q_INVOKABLE void appendDigit(const QString &digit);
-    Q_INVOKABLE void appendOperation(const QString &op);
-    Q_INVOKABLE void calculate();
-    Q_INVOKABLE void clear();
-    Q_INVOKABLE void clearAll();
-    Q_INVOKABLE void toggleSign();
-    Q_INVOKABLE void percent();
+    // Геттеры для свойств
+    QString formula() const;
+    QString result() const;
 
 signals:
-    void displayChanged();
-    void resultChanged();
+    void formulaChanged();   // Сигнал об изменении формулы
+    void resultChanged();    // Сигнал об изменении результата
 
 private:
-    QString m_display = "0";
-    QString m_result = "0";
-    QString m_pendingOperator;
-    QString m_operand1;
+    // Сеттеры (приватные, чтобы контролировать изменения)
+    void setFormula(const QString &formula);
+    void setResult(const QString &result);
+
+    QString m_formula;        // Текущая формула (выражение)
+    QString m_result;         // Результат последнего вычисления
+    bool m_justCalculated = false;  // Флаг, указывающий, что сразу после вычисления нужно начинать новое выражение
+
+    // Вспомогательные методы для валидации ввода
+    bool canAppendDot() const;           // Можно ли добавить точку в текущий операнд?
+    bool canAppendOperator(const QString &op); // Можно ли добавить оператор (с возможной заменой предыдущего)
 };
 
 #endif // CALCULATORENGINE_H
-//sd

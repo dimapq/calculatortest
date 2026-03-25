@@ -1,28 +1,28 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QDir>
-#include <QDebug>
+#include <QQmlContext>
 #include "calculatorengine.h"
 
 int main(int argc, char *argv[])
 {
+    // Создаём приложение
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<CalculatorEngine>("CalculatorEngine", 1, 0, "CalculatorEngine");
-
+    // Движок QML
     QQmlApplicationEngine engine;
 
-    // Точный путь к твоему main.qml!
-    const QUrl url(QStringLiteral("file:///C:/Users/user/Documents/calctest/main.qml"));
-    qDebug() << "Loading:" << url;
+    // Создаём экземпляр движка калькулятора
+    CalculatorEngine calculator;
+    // Регистрируем его в контексте QML под именем "calculator"
+    engine.rootContext()->setContextProperty("calculator", &calculator);
 
-    engine.load(url);
+    // Загружаем главный QML-файл из ресурсов
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    if (engine.rootObjects().isEmpty()) {
-        qDebug() << "Failed to load QML!";
+    // Если не удалось загрузить, выходим с ошибкой
+    if (engine.rootObjects().isEmpty())
         return -1;
-    }
 
+    // Запускаем событийный цикл
     return app.exec();
 }
-//sd

@@ -1,54 +1,40 @@
-# C++ objects and libs
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.so.*
-*.dll
-*.dylib
-
-# Qt-es
-object_script.*.Release
-object_script.*.Debug
-*_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
+# Qt / C++
 *.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
+*.user
+*.user.*
+*.o
+*.so
+*.a
 moc_*.cpp
 moc_*.h
 qrc_*.cpp
 ui_*.h
-*.qmlc
-*.jsc
-Makefile*
-*build-*
-*.qm
-*.prl
+Makefile
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeLists.txt.user
 
-# Qt unit tests
-target_wrapper.*
+# Android
+android-build/
+android-build-debug/
+android-build-release/
+*.apk
+*.dex
+*.jar
+*.keystore
+*.jks
 
-# QtCreator
-*.autosave
+# Сборка
+build/
+build-*/
 
-# QtCreator Qml
-*.qmlproject.user
-*.qmlproject.user.*
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
 
-# QtCreator CMake
-CMakeLists.txt.user*
-
-# QtCreator 4.8< compilation database
-compile_commands.json
-
-# QtCreator local machine specific files for imported projects
-*creator.user*
-
-*_qmlcache.qrc
+# Временные файлы
+*.tmp
+*.log
