@@ -40,7 +40,6 @@ Window {
                 text: calculator ? (calculator.formula !== "" ? calculator.formula : (calculator.result !== "" ? calculator.result : "0")) : "0"
                 font.family: "Open Sans"
                 font.pixelSize: 50
-
                 font.letterSpacing: 0.5
                 color: "#FFFFFF"
                 horizontalAlignment: Text.AlignRight
@@ -56,7 +55,6 @@ Window {
                 text: lastExpression !== "" ? lastExpression : ""
                 font.family: "Open Sans"
                 font.pixelSize: 20
-
                 font.letterSpacing: 0.5
                 color: "#FFFFFF"
                 horizontalAlignment: Text.AlignRight
@@ -68,7 +66,6 @@ Window {
         GridLayout {
             id: buttonGrid
             anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: 12
@@ -79,44 +76,48 @@ Window {
 
             Repeater {
                 model: [
-                    {text:"()", color:"#0889A6", action:"parenthesis"},
-                    {text:"+/-", color:"#0889A6", action:"toggleSign"},
-                    {text:"%", color:"#0889A6", action:"percent"},
-                    {text:"÷", color:"#0889A6", action:"÷"},
+                    // Первая строка
+                    { icon: "qrc:/images/bkt.svg",          action:"parenthesis", isIcon: true, color: "#0889A6" },
+                    { icon: "qrc:/images/plus_minus.svg",   action:"toggleSign",  isIcon: true, color: "#0889A6" },
+                    { icon: "qrc:/images/percent.svg",      action:"percent",     isIcon: true, color: "#0889A6" },
+                    { icon: "qrc:/images/division.svg",     action:"÷",           isIcon: true, color: "#0889A6" },
 
-                    {text:"7", color:"#B0D1D8", action:"7"},
-                    {text:"8", color:"#B0D1D8", action:"8"},
-                    {text:"9", color:"#B0D1D8", action:"9"},
-                    {text:"×", color:"#0889A6", action:"×"},
+                    // Вторая строка
+                    { text:"7", color:"#B0D1D8", action:"7", isIcon: false },
+                    { text:"8", color:"#B0D1D8", action:"8", isIcon: false },
+                    { text:"9", color:"#B0D1D8", action:"9", isIcon: false },
+                    { icon: "qrc:/images/multiplication.svg", action:"×", isIcon: true, color: "#0889A6" },
 
-                    {text:"4", color:"#B0D1D8", action:"4"},
-                    {text:"5", color:"#B0D1D8", action:"5"},
-                    {text:"6", color:"#B0D1D8", action:"6"},
-                    {text:"-", color:"#0889A6", action:"-"},
+                    // Третья строка
+                    { text:"4", color:"#B0D1D8", action:"4", isIcon: false },
+                    { text:"5", color:"#B0D1D8", action:"5", isIcon: false },
+                    { text:"6", color:"#B0D1D8", action:"6", isIcon: false },
+                    { icon: "qrc:/images/minus.svg",        action:"-",  isIcon: true, color: "#0889A6" },
 
-                    {text:"1", color:"#B0D1D8", action:"1"},
-                    {text:"2", color:"#B0D1D8", action:"2"},
-                    {text:"3", color:"#B0D1D8", action:"3"},
-                    {text:"+", color:"#0889A6", action:"+"},
+                    // Четвёртая строка
+                    { text:"1", color:"#B0D1D8", action:"1", isIcon: false },
+                    { text:"2", color:"#B0D1D8", action:"2", isIcon: false },
+                    { text:"3", color:"#B0D1D8", action:"3", isIcon: false },
+                    { icon: "qrc:/images/plus.svg",         action:"+",  isIcon: true, color: "#0889A6" },
 
-                    {text:"C", color:"#F25E5E", action:"clear"},
-                    {text:"0", color:"#B0D1D8", action:"0"},
-                    {text:".", color:"#B0D1D8", action:"."},
-                    {text:"=", color:"#0889A6", action:"calculate", isEqual: true}
+                    // Пятая строка
+                    { text:"C", color:"#F25E5E", action:"clear",   isIcon: false },
+                    { text:"0", color:"#B0D1D8", action:"0",      isIcon: false },
+                    { text:".", color:"#B0D1D8", action:".",      isIcon: false },
+                    { icon: "qrc:/images/equal.svg",        action:"calculate", isEqual: true, isIcon: true, color: "#0889A6" }
                 ]
 
                 delegate: Rectangle {
                     id: buttonRect
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 0
-                    Layout.preferredHeight: 65
-                    radius: 42
+                    Layout.preferredHeight: width   // высота равна ширине
+                    radius: width / 2               // круглые кнопки
 
                     color: {
                         if (modelData.action === "clear" && mouseArea.pressed) {
                             return "#FFFFFF"
                         }
-                        if (window.longPressActive && modelData.isEqual) {
+                        if (window.longPressActive && modelData.isEqual === true) {
                             return "#FF4444"
                         }
                         if (mouseArea.pressed) {
@@ -126,19 +127,29 @@ Window {
                     }
                     border.color: "#aaa"; border.width: 0.5
 
+                    Image {
+                        anchors.centerIn: parent
+                        source: modelData.isIcon === true ? modelData.icon : ""
+                        width: Math.min(parent.width * 0.5, parent.height * 0.5)
+                        height: width
+                        visible: modelData.isIcon === true
+                        fillMode: Image.PreserveAspectFit
+                    }
                     Text {
                         anchors.centerIn: parent
-                        text: modelData.text
+                        text: modelData.isIcon === true ? "" : modelData.text
                         font.family: "Open Sans"
-                        font.weight: Font.DemiBold
-                        font.pixelSize: 24
-
+                        font.pixelSize: Math.min(parent.width * 0.35, parent.height * 0.35)
                         font.letterSpacing: 1
-                        color: (modelData.action.match(/^[0-9.]$/) !== null) ? "#024873" : "white"
+                        color: {
+                            if (modelData.action === "clear" && mouseArea.pressed) return "#024873"
+                            return (modelData.action.match(/^[0-9.]$/) !== null) ? "#024873" : "white"
+                        }
+                        visible: modelData.isIcon !== true
                     }
 
                     SequentialAnimation on color {
-                        running: window.longPressActive && modelData.isEqual
+                        running: window.longPressActive && modelData.isEqual === true
                         loops: Animation.Infinite
                         ColorAnimation { to: "#FF4444"; duration: 300 }
                         ColorAnimation { to: "#FF8888"; duration: 300 }
@@ -184,51 +195,15 @@ Window {
         }
     }
 
-    StackView { id: stackView; anchors.fill: parent; initialItem: mainRect }
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: mainRect
+    }
 
     Component {
         id: secretPage
-        Rectangle {
-            color: "#1a1a1a"
-
-            Canvas {
-                id: canvas
-                anchors.fill: parent
-                anchors.bottomMargin: 100   // оставляем место для кнопки "Назад"
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.font = "90px 'Open Sans Semibold'";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-
-                    var text = "Секретное меню!\nhttps://github.com/dimapq\n+7(981)813-38-01\nДмитрий Филенков\nхочу у вас работать";
-                    var lines = text.split("\n");
-                    var lineCount = lines.length;
-                    // Равномерно распределяем строки по высоте Canvas
-                    var step = height / (lineCount + 1);
-                    for (var i = 0; i < lineCount; i++) {
-                        var y = step * (i + 1);
-                        var x = width / 2;
-                        var gradient = ctx.createLinearGradient(x - 300, y - 45, x + 300, y + 45);
-                        gradient.addColorStop(0, "#d60303");
-                        gradient.addColorStop(1, "#ffc800");
-                        ctx.fillStyle = gradient;
-                        ctx.fillText(lines[i], x, y);
-                    }
-                }
-            }
-
-            Button {
-                text: "Назад"
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottomMargin: 50
-                font.family: "Open Sans"
-                font.weight: Font.DemiBold
-                onClicked: stackView.pop()
-            }
-        }
+        SecretPage { }
     }
 
     Timer {
